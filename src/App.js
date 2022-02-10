@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useEffect } from "react/cjs/react.development";
 import "./styles.css";
 import Modal from "./components/Modal";
@@ -7,14 +7,7 @@ const ModalCep = () => {
   const [dropdown, setDropdown] = useState("");
   const modalRef = useRef(null);
 
-  const toggleDropdown = () => {
-    console.log("show");
-    //se clicar no botão, modal aparece
-    setDropdown("show");
-    document.body.addEventListener("click", closeDropdown);
-  };
-
-  const closeDropdown = (event) => {
+  const closeDropdown = useCallback((event) => {
     event.stopPropagation(); //impede de executar listeners dos filhos
     const contain = modalRef.current.contains(event.target);
     if (!contain) {
@@ -23,7 +16,14 @@ const ModalCep = () => {
       setDropdown("");
       document.body.removeEventListener("click", closeDropdown);
     }
-  };
+  }, []);
+
+  const toggleDropdown = useCallback(() => {
+    console.log("show");
+    //se clicar no botão, modal aparece
+    setDropdown("show");
+    document.body.addEventListener("click", closeDropdown);
+  }, [closeDropdown]);
 
   useEffect(() => {
     toggleDropdown();
@@ -47,7 +47,7 @@ const ModalCep = () => {
     // };
 
     // getLocation();
-  }, []);
+  }, [toggleDropdown]);
 
   return (
     <div className="App">
